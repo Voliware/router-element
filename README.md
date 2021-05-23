@@ -68,6 +68,8 @@ Or you can use a CDN
 
 `<script src="https://cdn.jsdelivr.net/npm/@voliware/router-element/dist/router-element.min.js"></script>`
 
+`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@voliware/router-element/dist/router-element.min.css"/>`
+
 Or you can simply download the files in the `/dist` folder off the repo.
 
 # Tests
