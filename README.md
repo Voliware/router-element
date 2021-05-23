@@ -23,14 +23,20 @@ Two simple elements, `<router-element>` and `<route-element>` that manage your p
  *     </route-element>
  * </router-element>
 ```
-This is an example of a simple SPA. At the top is a `<router-element>` which will manage the address bar and history. The rest of the elements are `<route-element>`s which organize views by URL. `<route-element>`s are hidden by a class called `hidden`. If we navigate in some way to `/users/account/profile`, the following three elements with matching URLs will be revealed
+This is an example of a simple SPA. At the top is a `<router-element>` which will manage the address bar and history. The rest of the elements are `<route-element>`s which organize views by URL. `<route-element>`s are hidden by a class called `hidden`. 
+
+The only function call needed is `route(url)`. This can be called from any `<route-element>`. In this example we would capture the main `<router-element>` like
+```js
+const router = document.querySelector('router-element');
+router.route('/users/account/profile');
+```
+
+In this case, the following three elements with matching URLs will be revealed
 1. `/users`
 2. `/users/account`
 3. `/users/account/profile`
 
-Any irrelevant ones are hidden. 
-
-The `<router-element>` is optional and can be avoided for non-SPA apps or if another system is in place. Note that `<router-element>` is also a `<route-element>` and has the same functionality so it does work as a top level route if desired. However it is not hidden by default.
+Any irrelevant ones are hidden. The `<router-element>` by default will also reveal the appropriate elements if the address bar changes. The `<router-element>` is optional and can be avoided for non-SPA apps or if another system is in place. Note that `<router-element>` is also a `<route-element>` and has the same functionality so it does work as a top level route if desired. However it is not hidden by default.
 
 # Options
 If you don't want `<router-element>` to save navigation history, you can set the `history` attribute to "false". If you don't want `<router-element>` to change the view as the address bar changes, you can set the `auto` attribute to "false".
