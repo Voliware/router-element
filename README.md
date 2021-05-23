@@ -4,24 +4,24 @@ Two simple elements, `<router-element>` and `<route-element>` that manage your p
 # Example
 
 ```html
- * <router-element>
- *     <route-element url="/">
- *         Home Page
- *     </route-element>
- *     <route-element url="/users">
- *         <route-element url="/users/account">
- *             <route-element url="/users/account/settings">
- *                 Account Settings
- *             </route-element>
- *             <route-element url="/users/account/profile">
- *                 Profile
- *             </route-element>
- *         </route-element>
- *         <route-element url="/users/friends">
- *             Friends list
- *         </route-element>
- *     </route-element>
- * </router-element>
+<router-element>
+    <route-element url="/">
+        Home Page
+    </route-element>
+    <route-element url="/users">
+        <route-element url="/users/account">
+            <route-element url="/users/account/settings">
+                Account Settings
+            </route-element>
+            <route-element url="/users/account/profile">
+                Profile
+            </route-element>
+        </route-element>
+        <route-element url="/users/friends">
+            Friends list
+        </route-element>
+    </route-element>
+</router-element>
 ```
 This is an example of a simple SPA. At the top is a `<router-element>` which will manage the address bar and history. The rest of the elements are `<route-element>`s which organize views by URL. `<route-element>`s are hidden by a class called `hidden`. 
 
@@ -39,13 +39,20 @@ In this case, the following three elements with matching URLs will be revealed
 Any irrelevant ones are hidden. The `<router-element>` by default will also reveal the appropriate elements if the address bar changes. The `<router-element>` is optional and can be avoided for non-SPA apps or if another system is in place. Note that `<router-element>` is also a `<route-element>` and has the same functionality so it does work as a top level route if desired. However it is not hidden by default.
 
 # Options
-If you don't want `<router-element>` to save navigation history, you can set the `history` attribute to "false". If you don't want `<router-element>` to change the view as the address bar changes, you can set the `auto` attribute to "false".
+You can set some attributes for `<router-element>` for some minor behaviour differences
 
-```html
-<router-element auto="false" history="false">
-  <!-- insert routes here -->
-</router-element>
+`<router-element auto="false">` will prevent setting the route based on the navigation address on page load. Note that auto should be set to false if your routes are added dynamically, ie they are not all there on the page's initial load. If you need to wait, you can set auto to false and at any point call `init()` on the `<router-element>`.
+
+```js
+const router = document.querySelector('router-element');
+// Wait until all <route-element>s have been added
+router.init();
 ```
+
+`<router-element back="false">` will prevent intercepting the back navigation action from changing the current route.
+
+`<router-element history="false">` will prevent routing from updating the navigation bar. 
+
 
 # Install or include
 
@@ -64,7 +71,7 @@ Or you can use a CDN
 Or you can simply download the files in the `/dist` folder off the repo.
 
 # Tests
-Simply open the `test.html` file.
+Run `npm run test`.
 
 # Future
 Fragmented `<route-element>`s that aren't all organized in the HTML in a nested fashion. This would be useful for HTML that resides in one final and has become very nested.
