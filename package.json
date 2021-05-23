@@ -1,0 +1,29 @@
+{
+  "name": "@voliware/router-element",
+  "version": "1.0.1",
+  "description": "A simple router element built with custom elements",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.js",
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voliware/router-element.git"
+  },
+  "keywords": [
+    "router"
+  ],
+  "author": "Voliware",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Voliware/router-element/issues"
+  },
+  "homepage": "https://github.com/Voliware/router-element#readme",
+  "devDependencies": {
+    "@voliware/node-build": "^1.7.3",
+    "fastify": "^3.15.1",
+    "fastify-static": "^4.2.2",
+    "open": "^8.1.0"
+  }
+}

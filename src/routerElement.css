@@ -1,0 +1,7 @@
+router-element,
+route-element {
+    display: block;
+}
+route-element.hidden {
+    display: none!important;
+}
