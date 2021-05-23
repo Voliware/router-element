@@ -36,7 +36,7 @@ In this case, the following three elements with matching URLs will be revealed
 2. `/users/account`
 3. `/users/account/profile`
 
-Any irrelevant ones are hidden. The `<router-element>` by default will also reveal the appropriate elements if the address bar changes. The `<router-element>` is optional and can be avoided for non-SPA apps or if another system is in place. Note that `<router-element>` is also a `<route-element>` and has the same functionality so it does work as a top level route if desired. However it is not hidden by default.
+Any irrelevant ones are hidden. The `<router-element>` is optional and can be avoided for non-SPA apps or if another system is in place. Note that `<router-element>` is also a `<route-element>` and has the same functionality so it does work as a top level route if desired. However it is not hidden by default.
 
 # Options
 You can set some attributes for `<router-element>` for some minor behaviour differences
