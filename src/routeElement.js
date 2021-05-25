@@ -118,7 +118,7 @@ class RouteElement extends HTMLElement {
         this.routes.clear();
         for (let i = 0; i < this.children.length; i++) {
             const element = this.children[i];
-            if (element instanceof RouterElement) {
+            if (element instanceof RouteElement) {
                 this.routes.set(element.getAttribute('url'), element);
                 
                 // When the url changes, and it was the current route, set to null
