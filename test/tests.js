@@ -30,14 +30,19 @@ describe("route-element", function() {
 
     it("reveals route with matching url", function() {
         this.router.route('/movies');
-        const hidden = this.route2.classList.contains('hidden');
-        assert.strictEqual(hidden, false);
+        assert.strictEqual(this.route2.style.display, 'block');
+    });
+
+    it("reveals route with matching url using display attribute", function() {
+        this.route2.setAttribute('display', 'flex');
+        this.router.route('/movies');
+        assert.strictEqual(this.route2.style.display, 'flex');
     });
 
     it("reveals nested routes with matching url", function() {
         this.router.route('/users/account');
-        const hidden = this.route3a.classList.contains('hidden') &&
-            this.route3b.classList.contains('hidden');
+        const hidden = this.route3a.style.display === 'none'
+            && this.route3b.style.display === 'none';
         assert.strictEqual(hidden, false);
     });
 
@@ -48,8 +53,7 @@ describe("route-element", function() {
 
     it("hides other routes if a new route is set", function() {
         this.router.route('/users/account');
-        const hidden = this.route2.classList.contains('hidden');
-        assert.strictEqual(hidden, true);
+        assert.strictEqual(this.route2.style.display, 'none');
     });
 
     it("emits an event when the current route's url changes", async function() {

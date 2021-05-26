@@ -40,7 +40,7 @@
     /**
      * Initialize by setting the current route using the current pathname.
      */
-    init(){
+    initialize(){
         this.route(window.location.pathname, false);
     }
 

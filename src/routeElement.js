@@ -53,6 +53,13 @@ class RouteElement extends HTMLElement {
          */
         this.current_url = '';
 
+        /**
+         * Whether the route has been initailized.
+         * Initialization is an optional implementation.
+         * @type {Boolean}
+         */
+        this.is_initialized = false;
+
         // Add a mutation observer to watch for added or removed route-elements
         // and url attribute changes. If something happens to the current route,
         // all we can do is emit an event and hope someone knows what to do about it.
@@ -103,11 +110,36 @@ class RouteElement extends HTMLElement {
     }
 
     /**
-     * On connection, hide the element and find all child routes
+     * On connection, find all child routes
      */
     connectedCallback(){
-        this.classList.toggle('hidden', true);
         this.findRoutes();
+    }
+
+    /**
+     * Initialize the element 
+     */
+    init(){
+        if(this.is_initialized){
+            return;
+        }
+        this.is_initialized = true;
+        this.initialize();
+    }    
+
+    /**
+     * Initialize callback. Optional.
+     */
+    initialize(){
+
+    }
+
+    /**
+     * Toggle the display to hidden or not hidden
+     */
+    toggle(state){
+        const display = this.getAttribute('display') || 'block';
+        this.style.display = state ? display : 'none';
     }
 
     /**
@@ -142,18 +174,35 @@ class RouteElement extends HTMLElement {
      * element.route('/users/account')
      */
     route(url) {
-		for(const [route_url, route] of this.routes){
-			if(url.includes(route_url)){
-                this.setRoute(route_url)
-				route.route(url);
-			}
-		}
+        // Validate url
+        if(typeof url !== 'string'){
+            console.warn('Invalid URL passed to route()');
+        }
+        // Special case for '/' which would match with everything
+        else if(url === '/' || url === ''){
+            this.setRoute(url);
+        }
+        // Recursively reveal routes
+        else {
+            for(const [route_url, route] of this.routes){
+                // Skip '/' and ''
+                if(route_url === '/' || route_url === ''){
+                    continue;
+                }
+                if(url.includes(route_url)){
+                    this.setRoute(route_url)
+                    route.route(url);
+                    break;
+                }
+            }
+        }
 	}
 
     /**
      * Reveal a route-element based on the provided url.
      * Hide the previously revealed route.
      * Add the url to the window history.
+     * Call the route's init() function which will call its initialize()
      * @param {String} url 
      */
     setRoute(url){
@@ -165,11 +214,12 @@ class RouteElement extends HTMLElement {
         // Hide the current route
         if (this.current_url !== '') {
             const current_route = this.routes.get(this.current_url);
-            current_route.classList.toggle('hidden', true);
+            current_route.toggle(false);
         }
 
         this.current_url = url;
-        route.classList.toggle('hidden', false);
+        route.toggle(true);
+        route.init();
     }
 }
 customElements.define('route-element', RouteElement);
