@@ -1,24 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Tests</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" href="/dist/router-element.min.css"/>
-    <link rel="stylesheet" href="/test/mocha.css"/>
-  </head>
-  <body>
-    <div id="mocha"></div>
-    <script src="/test/chai.js"></script>
-    <script src="/test/mocha.js"></script>
-    <script class="mocha-init">
-      mocha.setup('bdd');
-      mocha.checkLeaks();
-    </script>
-    <script src="/dist/router-element.min.js"></script>
-    <script src="/test/tests.js"></script>
-    <script class="mocha-exec">
-      mocha.run();
-    </script>
-  </body>
+    <head>
+        <meta charset="utf-8" />
+        <title>Tests</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="/dist/router-element.min.css"/>
+        <link rel="stylesheet" href="/test/mocha.css"/>
+    </head>
+    <body>
+        <!-- Router -->
+        <router-element nav="#nav1, #nav2">
+            <route-element url="/" ></route-element>
+            <route-element url="/users/login" display="flex"></route-element>
+            <route-element url="/users/register"></route-element>
+            <route-element url="/users/account/settings"></route-element>
+            <route-element url="/movies"></route-element>
+            <route-element url="/games"></route-element>
+        </router-element>
+        <!-- Navs -->
+        <div id="nav1">
+            <div url="/" class="route-element-nav"></div>
+            <div url="/users/login" class="route-element-nav"></div>
+            <div url="/users/register" class="route-element-nav"></div>
+            <div url="/users/account/settings" class="route-element-nav"></div>
+            <div url="/movies" class="route-element-nav"></div>
+            <div url="/games" class="route-element-nav"></div>
+        </div>
+        <div id="nav2">
+            <div url="/" class="route-element-nav"></div>
+            <div url="/users/login" class="route-element-nav"></div>
+            <div url="/users/register" class="route-element-nav"></div>
+            <div url="/users/account/settings" class="route-element-nav"></div>
+            <div url="/movies" class="route-element-nav"></div>
+            <div url="/games" class="route-element-nav"></div>
+        </div>
+        <!-- Mocha -->
+        <div id="mocha"></div>
+        <script src="/test/chai.js"></script>
+        <script src="/test/mocha.js"></script>
+        <script class="mocha-init">
+            mocha.setup('bdd');
+            mocha.checkLeaks();
+        </script>
+        <script src="/dist/router-element.min.js"></script>
+        <!-- <script src="/src/routeElement.js"></script> -->
+        <!-- <script src="/src/routerElement.js"></script> -->
+        <script src="/test/tests.js"></script>
+        <script class="mocha-exec">mocha.run();</script>
+    </body>
 </html>

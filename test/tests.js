@@ -1,61 +1,78 @@
 const assert = chai.assert;
 describe("route-element", function() {
     before(function (){
-        this.router = document.createElement('router-element');
-        this.route1 = document.createElement('route-element');
-        this.route2 = document.createElement('route-element');
-        this.route3a = document.createElement('route-element');
-        this.route3b = document.createElement('route-element');
+        this.router = document.querySelector('router-element');
+        this.route_root = document.querySelector('route-element[url="/"]');
+        this.route_users_login = document.querySelector('route-element[url="/users/login"]');
+        this.route_users_register = document.querySelector('route-element[url="/users/register"]');
+        this.route_users_account_settings = document.querySelector('route-element[url="/users/account/settings"]');
+        this.route_movies = document.querySelector('route-element[url="/movies"]');
+        this.route_games = document.querySelector('route-element[url="/games"]');
 
-        this.route1.setAttribute('url', '/');
-        this.route2.setAttribute('url', '/movies');
-        this.route3a.setAttribute('url', '/users');
-        this.route3b.setAttribute('url', '/users/account');
-
-        this.router.appendChild(this.route1);
-        this.router.appendChild(this.route2);
-        this.router.appendChild(this.route3a);
-        this.route3a.appendChild(this.route3b);
-
-        document.body.appendChild(this.router);
+        this.nav_root = document.querySelectorAll('.route-element-nav[url="/"]');
+        this.nav_users_login = document.querySelectorAll('.route-element-nav[url="/users/login"]');
+        this.nav_users_register = document.querySelectorAll('.route-element-nav[url="/users/register"]');
+        this.nav_users_account_settings = document.querySelectorAll('.route-element-nav[url="/users/account/settings"]');
+        this.nav_movies = document.querySelectorAll('.route-element-nav[url="/movies"]');
+        this.nav_games = document.querySelectorAll('.route-element-nav[url="/games"]');
     });
 
     it("finds all child route-elements", function() {
-        assert.strictEqual(this.router.routes.size, 3);
-        assert.strictEqual(this.route1.routes.size, 0);
-        assert.strictEqual(this.route2.routes.size, 0);
-        assert.strictEqual(this.route3a.routes.size, 1);
-        assert.strictEqual(this.route3b.routes.size, 0);
+        assert.strictEqual(this.router.routes.size, 6);
     });
 
     it("reveals route with matching url", function() {
         this.router.route('/movies');
-        assert.strictEqual(this.route2.style.display, 'block');
+        assert.strictEqual(this.route_movies.style.display, 'block');
     });
 
     it("reveals route with matching url using display attribute", function() {
-        this.route2.setAttribute('display', 'flex');
-        this.router.route('/movies');
-        assert.strictEqual(this.route2.style.display, 'flex');
-    });
-
-    it("reveals nested routes with matching url", function() {
-        this.router.route('/users/account');
-        const hidden = this.route3a.style.display === 'none'
-            && this.route3b.style.display === 'none';
-        assert.strictEqual(hidden, false);
-    });
-
-    it("updates the navigation bar", function() {
-        this.router.route('/users/account');
-        assert.strictEqual('/users/account', window.location.pathname);
+        this.router.route('/users/login');
+        assert.strictEqual(this.route_users_login.style.display, 'flex');
     });
 
     it("hides other routes if a new route is set", function() {
-        this.router.route('/users/account');
-        assert.strictEqual(this.route2.style.display, 'none');
+        this.router.route('/games');
+        assert.strictEqual(window.getComputedStyle(this.route_root).display, 'none');
+        assert.strictEqual(window.getComputedStyle(this.route_users_login).display, 'none');
+        assert.strictEqual(window.getComputedStyle(this.route_users_register).display, 'none');
+        assert.strictEqual(window.getComputedStyle(this.route_users_account_settings).display, 'none');
+        assert.strictEqual(window.getComputedStyle(this.route_movies).display, 'none');
+        assert.strictEqual(this.route_games.style.display, 'block');
     });
 
+    it("adds the active navs classes", function() {
+        this.router.route('/users/account/settings');
+        assert.strictEqual(this.nav_users_account_settings[0].classList.contains('route-element-nav-active'), true);
+        assert.strictEqual(this.nav_users_account_settings[1].classList.contains('route-element-nav-active'), true);
+    });
+
+    it("removes the active navs classes", function() {
+        this.router.route('/');
+        assert.strictEqual(this.nav_root[0].classList.contains('route-element-nav-active'), true);
+        assert.strictEqual(this.nav_root[1].classList.contains('route-element-nav-active'), true);
+        assert.strictEqual(this.nav_users_login[0].classList.contains('route-element-nav-active'), false);
+        assert.strictEqual(this.nav_users_login[1].classList.contains('route-element-nav-active'), false);
+        assert.strictEqual(this.nav_users_register[0].classList.contains('route-element-nav-active'), false);
+        assert.strictEqual(this.nav_users_register[1].classList.contains('route-element-nav-active'), false);
+        assert.strictEqual(this.nav_users_account_settings[0].classList.contains('route-element-nav-active'), false);
+        assert.strictEqual(this.nav_users_account_settings[1].classList.contains('route-element-nav-active'), false);
+        assert.strictEqual(this.nav_movies[0].classList.contains('route-element-nav-active'), false);
+        assert.strictEqual(this.nav_movies[1].classList.contains('route-element-nav-active'), false);
+        assert.strictEqual(this.nav_games[0].classList.contains('route-element-nav-active'), false);
+        assert.strictEqual(this.nav_games[1].classList.contains('route-element-nav-active'), false);
+    });
+
+    it("routes when nav is clicked", function() {
+        this.nav_users_login[0].click();
+        assert.strictEqual(window.location.pathname, '/users/login');
+    });
+
+    it("updates the navigation bar", function() {
+        this.router.route('/users/account/settings');
+        assert.strictEqual('/users/account/settings', window.location.pathname);
+    });
+    
     it("emits an event when the current route's url changes", async function() {
         const promise = new Promise((resolve, reject) => {
             this.router.addEventListener('urlchanged', event => {
@@ -63,7 +80,7 @@ describe("route-element", function() {
             });
         })
         this.router.route('/movies');
-        this.route2.setAttribute('url', '/notmovies');
+        this.route_movies.setAttribute('url', '/notmovies');
         const result = await promise;
         assert.strictEqual(result, true);
     });
@@ -74,9 +91,14 @@ describe("route-element", function() {
                 resolve(true);
             });
         })
-        this.router.route('/users');
-        this.route3a.remove();
+        this.router.route('/users/login');
+        this.route_users_login.remove();
         const result = await promise;
         assert.strictEqual(result, true);
+    });
+
+    it("handles a bubbling route event", function() {
+        this.route_games.dispatchEvent(new CustomEvent('route', {detail: '/movies', bubbles: true}))
+        assert.strictEqual(this.route_movies.style.display, 'block');
     });
 });
