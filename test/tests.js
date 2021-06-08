@@ -65,6 +65,7 @@ describe("route-element", function() {
 
     it("routes when nav is clicked", function() {
         this.nav_users_login[0].click();
+        assert.strictEqual(this.route_users_login.style.display, 'flex');
         assert.strictEqual(window.location.pathname, '/users/login');
     });
 
@@ -93,6 +94,17 @@ describe("route-element", function() {
         })
         this.router.route('/users/login');
         this.route_users_login.remove();
+        const result = await promise;
+        assert.strictEqual(result, true);
+    });
+
+    it("emits an event when it calls route()", async function() {
+        const promise = new Promise((resolve, reject) => {
+            this.router.addEventListener('routed', event => {
+                resolve(event.detail === '/users/login');
+            });
+        })
+        this.router.route('/users/login');
         const result = await promise;
         assert.strictEqual(result, true);
     });

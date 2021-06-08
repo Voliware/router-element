@@ -190,6 +190,12 @@
             return;
         }
 
+        // Strip query params
+        const params_index = url.indexOf('?');
+        if(params_index > -1){
+            url = url.slice(0, params_index);
+        }
+
         // Add to history
         if (this.history_allowed && this.getAttribute('history') !== 'false'){
             window.history.pushState(null, null, url);
@@ -199,6 +205,8 @@
         this.setRoute(url)
         
         this.current_url = url;
+
+        this.dispatchEvent(new CustomEvent('routed', {detail: url, bubbles: true}));
 	}
 
     /**

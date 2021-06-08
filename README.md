@@ -23,6 +23,17 @@ router.route('/users/account/settings');
 
 This will reveal the `/users/account/settings` route and hide all others, which are hidden by default.
 
+## Events
+You can listen to the `<router-element>` event `routed` to take some action when a URL has been routed.
+
+```js
+const router = document.querySelector('router-element');
+router.addEventListener('routed', event => {
+    console.log(`Went to this ${event.detail} route`);
+});
+router.route('/users/account/settings');
+```
+
 ## Options
 You can set the `display` attribute for `<route-element>` to change what `display` style it uses when it is revealed
 
