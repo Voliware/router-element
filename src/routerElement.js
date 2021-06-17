@@ -63,7 +63,7 @@
     connectedCallback(){
         if(this.getAttribute('back') !== 'false'){
             window.addEventListener('popstate', () => {
-                this.route(window.location.pathname, false);
+                this.route(window.location.pathname, true);
             });
         }
 
@@ -182,8 +182,9 @@
     /**
      * Display a route-element based on the provided URL.
      * @param {String} url 
+     * @param {Boolean} [is_navigation=false] - Whether this route call is from back/forward.
      */
-    route(url) {
+    route(url, is_navigation = false) {
         // Validate url
         if(typeof url !== 'string'){
             console.warn('Invalid URL passed to route()');
@@ -196,17 +197,29 @@
             url = url.slice(0, params_index);
         }
 
+        // Support slugs
+        if(this.getAttribute('slugs') !== 'false'){
+            const last_slash = url.lastIndexOf('/');
+            if(last_slash > -1){
+                const slug = url.slice(last_slash + 1, url.length);
+                if(/^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)+$/.test(slug)){
+                    url = url.slice(0, last_slash);
+                }
+            }
+        }
+
         // Add to history
-        if (this.history_allowed && this.getAttribute('history') !== 'false'){
+        if (!is_navigation && this.history_allowed && this.getAttribute('history') !== 'false'){
             window.history.pushState(null, null, url);
         }
         
         this.setNav(url);
-        this.setRoute(url)
+        const found = this.setRoute(url)
         
         this.current_url = url;
 
-        this.dispatchEvent(new CustomEvent('routed', {detail: url, bubbles: true}));
+        const event_name = found ? 'routed' : 'notfound';
+        this.dispatchEvent(new CustomEvent(event_name, {detail: url, bubbles: true}));
 	}
 
     /**
@@ -215,11 +228,12 @@
      * Add the url to the window history.
      * Call the route's init() function which will call its initialize()
      * @param {String} url 
+     * @returns {Boolean} True if found, false otherwise
      */
     setRoute(url){
         const route = this.routes.get(url);
         if (!route) {
-            return;
+            return false;
         }
 		
         // Hide the current route
@@ -232,6 +246,8 @@
 
         route.toggle(true);
         route.init();
+
+        return true;
     }
 }
 customElements.define('router-element', RouterElement);

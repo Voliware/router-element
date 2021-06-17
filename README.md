@@ -34,6 +34,15 @@ router.addEventListener('routed', event => {
 router.route('/users/account/settings');
 ```
 
+You can listen to the `<router-element>` event `notfound` to take some action when a URL has not been found.
+```js
+const router = document.querySelector('router-element');
+router.addEventListener('notfound', event => {
+    console.log(`${event.detail} route does not exist!`);
+});
+router.route('/users/badurl');
+```
+
 ## Options
 You can set the `display` attribute for `<route-element>` to change what `display` style it uses when it is revealed
 
@@ -49,6 +58,8 @@ You can set some attributes for `<router-element>` for some minor behaviour diff
 `<router-element history="false">` will prevent routing from updating the address bar. 
 
 `<router-element auto="false">` will prevent the router from routing to the window location pathname on page load. To instead do this manually, call `initialize()` whenever your application is ready.
+
+`<router-element slugs="false">` will prevent the router from stripping slug-like text at the end of a URL. For example `/blogs/post/this-is-a-slug` would become `/blogs/post`.
 
 ```js
 const router = document.querySelector('router-element');
@@ -86,13 +97,24 @@ When a url is navigated to, `<router-element>` will set the appropriate nav's cl
 ```
 
 ## Events
-If you have a nested element inside a `<route-element>` and it does something that should trigger a route change, you can simply dispatch a route event with the detail set to the desired url and bubble set to true. A `<route-element>` will handle it if it has a matching URL.
+If you have a nested element inside a `<route-element>` and it does something that should trigger a route change, you can simply dispatch a route event with the detail set to the desired url and bubble set to true. The `<router-element>` will handle it if it has a matching URL.
 
 ```js 
 const btn = document.getElementById('button');
 btn.addEventListener('click', () => {
     this.dispatchEvent(new CustomEvent('route', {detail: '/users/friends', bubbles: true}));
 });
+```
+
+You can tie in to route changes, to do things like initial a component, like so
+
+```js
+const router = document.querySelector('router-element');
+router.addEventListener('route', event => {
+    if(event.detail === '/user/stats'){
+        users_stats_element.renderStats();
+    }
+}) 
 ```
 
 ## Don'ts!

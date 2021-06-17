@@ -66,12 +66,21 @@ describe("route-element", function() {
     it("routes when nav is clicked", function() {
         this.nav_users_login[0].click();
         assert.strictEqual(this.route_users_login.style.display, 'flex');
-        assert.strictEqual(window.location.pathname, '/users/login');
     });
 
     it("updates the navigation bar", function() {
         this.router.route('/users/account/settings');
         assert.strictEqual('/users/account/settings', window.location.pathname);
+    });
+
+    it("handles query strings", function() {
+        this.router.route('/users/login?a=b&c=d');
+        assert.strictEqual(this.route_users_login.style.display, 'flex');
+    });
+
+    it("handles slugs", function() {
+        this.router.route('/users/account/settings/this-is-a-slug');
+        assert.strictEqual(this.route_users_account_settings.style.display, 'block');
     });
     
     it("emits an event when the current route's url changes", async function() {
@@ -105,6 +114,17 @@ describe("route-element", function() {
             });
         })
         this.router.route('/users/login');
+        const result = await promise;
+        assert.strictEqual(result, true);
+    });
+
+    it("emits a notfound event when url is not found", async function() {
+        const promise = new Promise((resolve, reject) => {
+            this.router.addEventListener('notfound', () => {
+                resolve(true);
+            });
+        })
+        this.router.route('/users/login/fake');
         const result = await promise;
         assert.strictEqual(result, true);
     });
