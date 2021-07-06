@@ -7,6 +7,18 @@
  class RouterElement extends HTMLElement {
 
     /**
+     * Dispatch a 'router.route' element which will be picked up by any higher <router-element>
+     * @param {HTMLElement} element 
+     * @param {String} url 
+     */
+    static route(element, url){
+        element.dispatchEvent(new CustomEvent('router.route', {
+            detail: url,
+            bubbles: true
+        }))
+    }
+
+    /**
      * Constructor
      */
     constructor() {
@@ -52,7 +64,7 @@
         observer.observe(this, {childList: true});
         
         // Add an event listener to listen for bubbled route requests via events
-        this.addEventListener('route', event => {
+        this.addEventListener('router.route', event => {
             this.route(event.detail);
         });
     }
@@ -63,7 +75,7 @@
     connectedCallback(){
         if(this.getAttribute('back') !== 'false'){
             window.addEventListener('popstate', () => {
-                this.route(window.location.pathname, true);
+                this.route(window.location.pathname, {add_to_history: false});
             });
         }
 
@@ -79,7 +91,7 @@
      * Initialize by routing the location pathname.
      */
     initialize(){
-        this.route(window.location.pathname, false);
+        this.route(window.location.pathname, {add_to_history: false});
     }
 
     /**
@@ -90,7 +102,7 @@
         for(let i = 0; i < nodes.length; i++){
             if(this.current_url === nodes[i].getAttribute('url')){
                 this.current_url = null;
-                this.dispatchEvent(new Event('removed', {bubbles: true}));
+                this.dispatchEvent(new Event('router.removed', {bubbles: true}));
                 break;
             }
         }
@@ -170,7 +182,7 @@
                 this.routes.set(element.getAttribute('url'), element);
                 
                 // When the url changes, and it was the current route, set current_url to null
-                element.addEventListener('urlchanged', ({detail}) => {
+                element.addEventListener('route.urlchanged', ({detail}) => {
                     if(this.current_url === detail){
                         this.current_url = null;
                     }
@@ -181,59 +193,72 @@
 
     /**
      * Display a route-element based on the provided URL.
+     * Add the url to the window history.
+     * If nothing close can be found, emits "notfound" event
      * @param {String} url 
-     * @param {Boolean} [is_navigation=false] - Whether this route call is from back/forward.
+     * @param {Object} [options={}]
+     * @param {Boolean} [options.add_to_history=true] - Whether to add the route to window history
      */
-    route(url, is_navigation = false) {
+    route(url, {add_to_history = true} = {}) {
         // Validate url
         if(typeof url !== 'string'){
             console.warn('Invalid URL passed to route()');
             return;
         }
 
+        // URL after passing through some modifications
+        let processed_url = url;
+
         // Strip query params
-        const params_index = url.indexOf('?');
+        const params_index = processed_url.indexOf('?');
         if(params_index > -1){
-            url = url.slice(0, params_index);
+            processed_url = processed_url.slice(0, params_index);
         }
 
-        // Support slugs
-        if(this.getAttribute('slugs') !== 'false'){
-            const last_slash = url.lastIndexOf('/');
-            if(last_slash > -1){
-                const slug = url.slice(last_slash + 1, url.length);
-                if(/^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)+$/.test(slug)){
-                    url = url.slice(0, last_slash);
-                }
-            }
-        }
-
-        // Add to history
-        if (!is_navigation && this.history_allowed && this.getAttribute('history') !== 'false'){
+        // Add to history, use original URL
+        if (add_to_history && this.history_allowed && this.getAttribute('history') !== 'false'){
             window.history.pushState(null, null, url);
         }
         
-        this.setNav(url);
-        const found = this.setRoute(url)
-        
-        this.current_url = url;
+        const found_url = this.setRoute(processed_url)
 
-        const event_name = found ? 'routed' : 'notfound';
-        this.dispatchEvent(new CustomEvent(event_name, {detail: url, bubbles: true}));
+        const event_name = found_url ? 'router.routed' : 'router.notfound';
+        this.dispatchEvent(new CustomEvent(event_name, {
+            detail: found_url ? found_url : processed_url, 
+            bubbles: true
+        }));
 	}
 
     /**
      * Reveal a route-element based on the provided url.
+     * If the exact route is not found, tries to find the one that matches the most.
      * Hide the previously revealed route.
-     * Add the url to the window history.
      * Call the route's init() function which will call its initialize()
      * @param {String} url 
-     * @returns {Boolean} True if found, false otherwise
+     * @returns {String} Found URL if found, blank if not found
      */
     setRoute(url){
-        const route = this.routes.get(url);
+        let route = this.routes.get(url);
         if (!route) {
-            return false;
+            if(this.getAttribute('partial') !== 'false'){
+                // Find the best match possible
+                let best = '';
+                this.routes.forEach((route_element, route_url) => {
+                    if(url.includes(route_url)){
+                        if(route_url.length > best.length){
+                            best = route_url;
+                        }
+                    }
+                });
+                if(best){
+                    url = best;
+                    route = this.routes.get(url);
+                }
+            }
+        }
+
+        if(!route){
+            return "";
         }
 		
         // Hide the current route
@@ -243,11 +268,14 @@
                 current_route.toggle(false);
             }
         }
-
+        
+        this.setNav(url);
         route.toggle(true);
         route.init();
+        
+        this.current_url = url;
 
-        return true;
+        return this.current_url;
     }
 }
 customElements.define('router-element', RouterElement);

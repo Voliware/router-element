@@ -21,7 +21,7 @@ const router = document.querySelector('router-element');
 router.route('/users/account/settings');
 ```
 
-This will reveal the `/users/account/settings` route and hide all others, which are hidden by default.
+This will reveal the `/users/account/settings` route and hide all others, which are hidden by default. Unless configured otherwise, the router will also reveal partial results. For example, if `route('/users/accounts/settings/badroute')` is called, it will route to `/users/account/settings` as it is the closest match.
 
 ## Events
 You can listen to the `<router-element>` event `routed` to take some action when a URL has been routed.
@@ -57,9 +57,9 @@ You can set some attributes for `<router-element>` for some minor behaviour diff
 
 `<router-element history="false">` will prevent routing from updating the address bar. 
 
-`<router-element auto="false">` will prevent the router from routing to the window location pathname on page load. To instead do this manually, call `initialize()` whenever your application is ready.
+`<router-element partial="false">` will prevent routing to the best match possible if the exact route URL is not found. 
 
-`<router-element slugs="false">` will prevent the router from stripping slug-like text at the end of a URL. For example `/blogs/post/this-is-a-slug` would become `/blogs/post`.
+`<router-element auto="false">` will prevent the router from routing to the window location pathname on page load. To instead do this manually, call `initialize()` whenever your application is ready.
 
 ```js
 const router = document.querySelector('router-element');

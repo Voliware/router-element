@@ -35,7 +35,7 @@ class RouteElement extends HTMLElement {
                     case 'attributes':
                         // Emit an event on url change
                         if(mutation.attributeName === 'url'){
-                            const event = new CustomEvent('urlchanged', {
+                            const event = new CustomEvent('route.urlchanged', {
                                 detail: mutation.oldValue,
                                 bubbles: true
                             });

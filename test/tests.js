@@ -26,6 +26,11 @@ describe("route-element", function() {
         assert.strictEqual(this.route_movies.style.display, 'block');
     });
 
+    it("reveals route with closest match to url", function() {
+        this.router.route('/games/badroute');
+        assert.strictEqual(this.route_games.style.display, 'block');
+    });
+
     it("reveals route with matching url using display attribute", function() {
         this.router.route('/users/login');
         assert.strictEqual(this.route_users_login.style.display, 'flex');
@@ -77,15 +82,10 @@ describe("route-element", function() {
         this.router.route('/users/login?a=b&c=d');
         assert.strictEqual(this.route_users_login.style.display, 'flex');
     });
-
-    it("handles slugs", function() {
-        this.router.route('/users/account/settings/this-is-a-slug');
-        assert.strictEqual(this.route_users_account_settings.style.display, 'block');
-    });
     
     it("emits an event when the current route's url changes", async function() {
         const promise = new Promise((resolve, reject) => {
-            this.router.addEventListener('urlchanged', event => {
+            this.router.addEventListener('route.urlchanged', event => {
                 resolve(true);
             });
         })
@@ -97,7 +97,7 @@ describe("route-element", function() {
 
     it("emits an event when the current route is removed", async function() {
         const promise = new Promise((resolve, reject) => {
-            this.router.addEventListener('removed', event => {
+            this.router.addEventListener('router.removed', event => {
                 resolve(true);
             });
         })
@@ -109,7 +109,7 @@ describe("route-element", function() {
 
     it("emits an event when it calls route()", async function() {
         const promise = new Promise((resolve, reject) => {
-            this.router.addEventListener('routed', event => {
+            this.router.addEventListener('router.routed', event => {
                 resolve(event.detail === '/users/login');
             });
         })
@@ -120,17 +120,22 @@ describe("route-element", function() {
 
     it("emits a notfound event when url is not found", async function() {
         const promise = new Promise((resolve, reject) => {
-            this.router.addEventListener('notfound', () => {
+            this.router.addEventListener('router.notfound', () => {
                 resolve(true);
             });
         })
-        this.router.route('/users/login/fake');
+        this.router.route('thereisnopath');
         const result = await promise;
         assert.strictEqual(result, true);
     });
 
     it("handles a bubbling route event", function() {
         this.route_games.dispatchEvent(new CustomEvent('route', {detail: '/movies', bubbles: true}))
+        assert.strictEqual(this.route_movies.style.display, 'block');
+    });
+
+    it("handles a static route event", function() {
+        RouterElement.route(this.route_games, '/movies');
         assert.strictEqual(this.route_movies.style.display, 'block');
     });
 });
