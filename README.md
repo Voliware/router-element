@@ -28,7 +28,7 @@ You can listen to the `<router-element>` event `routed` to take some action when
 
 ```js
 const router = document.querySelector('router-element');
-router.addEventListener('routed', event => {
+router.addEventListener('router.routed', event => {
     console.log(`Went to this ${event.detail} route`);
 });
 router.route('/users/account/settings');
@@ -37,7 +37,7 @@ router.route('/users/account/settings');
 You can listen to the `<router-element>` event `notfound` to take some action when a URL has not been found.
 ```js
 const router = document.querySelector('router-element');
-router.addEventListener('notfound', event => {
+router.addEventListener('router.notfound', event => {
     console.log(`${event.detail} route does not exist!`);
 });
 router.route('/users/badurl');
@@ -82,7 +82,7 @@ The `<router-element>` can also connect to one or more simple navigation element
 </div>
 ```
 
-Notice how each nav in question has a `class="route-element-nav`. This is the only attribute required to be a valid navigation element. To connect this nav to a `<route-element>` add a `nav=""` attribute with one or more ids. Multiple ids are supported in the case that there may be two identical menus in the HTML, such as a top and bottom navigation system.
+Notice how each nav in question have a `class="route-element-nav"` and a `url`. These are the only attributes required to be a valid navigation element. To connect this nav to a `<route-element>` add a `nav=""` attribute with one or more ids. Multiple ids are supported in the case that there may be two identical menus in the HTML, such as a top and bottom navigation system.
 
 ```html
 <router-element nav="#navtop, #navbottom"></router-element>
@@ -97,20 +97,22 @@ When a url is navigated to, `<router-element>` will set the appropriate nav's cl
 ```
 
 ## Events
-If you have a nested element inside a `<route-element>` and it does something that should trigger a route change, you can simply dispatch a route event with the detail set to the desired url and bubble set to true. The `<router-element>` will handle it if it has a matching URL.
+If you have a nested element inside a `<route-element>` and it does something that should trigger a route change, you can simply dispatch a route event with the static `route` method. The `<router-element>` will handle it if it has a matching URL.
 
 ```js 
 const btn = document.getElementById('button');
 btn.addEventListener('click', () => {
-    this.dispatchEvent(new CustomEvent('route', {detail: '/users/friends', bubbles: true}));
+    RouterElement.route(this, '/users/friends');
+    // Same as this
+    // this.dispatchEvent(new CustomEvent('router.route', {detail: '/users/friends', bubbles: true}));
 });
 ```
 
-You can tie in to route changes, to do things like initial a component, like so
+You can tie in to route changes, to do things like initialize a component, like so
 
 ```js
 const router = document.querySelector('router-element');
-router.addEventListener('route', event => {
+router.addEventListener('router.route', event => {
     if(event.detail === '/user/stats'){
         users_stats_element.renderStats();
     }
@@ -120,12 +122,10 @@ router.addEventListener('route', event => {
 ## Don'ts!
 - Don't have more than one of the same route! URLs should be unique, as designed.
 
-## More
-`findRoutes()` is an internal function that looks through child elements to find all `<route-element>`s.
-
-1. Adding routes dynamically will trigger the `findRoutes()` function which will recapture all `<route-elements>`
-2. Extended elements are also added as `findRoutes()` checks each child to be an `instanceof RouteElement`
-3. Changing `url` attributes also triggers a call to `findRoutes()`
+## For Your Information
+1. Adding routes dynamically will a function call which will recapture all `<route-element>`s
+2. Custom elements that extend `RouteElement` are also supported as each child is checked to be an `instanceof RouteElement`
+3. Changing `url` attributes also triggers a call to recapture all routes
 
 # Install or include
 
