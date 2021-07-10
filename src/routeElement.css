@@ -1,0 +1,6 @@
+route-element {
+    display: none;
+}
+.route-element-hidden {
+    display: none!important;
+}

@@ -1,6 +1,6 @@
 {
   "name": "@voliware/router-element",
-  "version": "2.6.2",
+  "version": "2.6.4",
   "description": "A simple router element built with custom elements",
   "main": "index.js",
   "scripts": {

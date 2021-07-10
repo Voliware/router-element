@@ -9,7 +9,7 @@ const css = new NodeBuild.FileBuilder({
     name: 'CSS',
     type: 'css',
     version: version,
-    input: './src/routerElement.css',
+    input: './src/*.css',
     output: './dist/router-element.min.css',
     minify: true
 });
