@@ -43,6 +43,17 @@ router.addEventListener('router.notfound', event => {
 router.route('/users/badurl');
 ```
 
+You can listen to the `<router-element>` event `router.beforeroute` to take some action before a route is routed to. It also provides the ability to block a route from routing.
+```js
+const router = document.querySelector('router-element');
+router.addEventListener('router.beforeroute', event => {
+    if(event.detail.url === 'restricted'){
+        event.detail.cancel = true;
+    }
+});
+router.route('/restricted');
+```
+
 If you have a nested element inside a `<route-element>` and it does something that should trigger a route change, you can simply dispatch a route event with the static `route` method. The `<router-element>` will handle it.
 
 ```js 

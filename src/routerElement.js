@@ -215,6 +215,18 @@
             processed_url = processed_url.slice(0, params_index);
         }
 
+        // Emit event in case someone wants to block this
+        // They can set cancel to true
+        const detail = {url, cancel: false};
+        this.dispatchEvent(new CustomEvent('router.beforeroute', {
+            detail: detail,
+            bubbles: true
+        }));
+
+        if(detail.cancel){
+            return;
+        }
+
         // Add to history, use original URL
         if (add_to_history && this.history_allowed && this.getAttribute('history') !== 'false'){
             window.history.pushState(null, null, url);

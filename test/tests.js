@@ -138,4 +138,14 @@ describe("route-element", function() {
         RouterElement.route(this.route_games, '/movies');
         assert.strictEqual(this.route_movies.style.display, 'block');
     });
+
+    it("does not route if it was cancelled", function() {
+        this.router.addEventListener('router.beforeroute', event => {
+            if(event.detail.url === '/games'){
+                event.detail.cancel = true;
+            }
+        });
+        RouterElement.route(this.route_movies, '/games');
+        assert.strictEqual(this.route_games.style.display, 'none');
+    });
 });
