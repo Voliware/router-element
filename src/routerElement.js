@@ -256,7 +256,7 @@
                 // Find the best match possible
                 let best = '';
                 this.routes.forEach((route_element, route_url) => {
-                    if(url.includes(route_url)){
+                    if(url.startsWith(route_url)){
                         if(route_url.length > best.length){
                             best = route_url;
                         }
